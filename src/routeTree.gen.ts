@@ -13,6 +13,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as OrderRouteImport } from './routes/order'
 import { Route as TrackRouteImport } from './routes/track'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
+import { Route as ApiPaymentProofKeyRouteImport } from './routes/api.payment-proof.$key'
 import { Route as ApiProductImageKeyRouteImport } from './routes/api.product-image.$key'
 
 const IndexRoute = IndexRouteImport.update({
@@ -35,6 +38,21 @@ const TrackRoute = TrackRouteImport.update({
   path: '/track',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AdminRoute,
+} as any)
+const ApiPaymentProofKeyRoute = ApiPaymentProofKeyRouteImport.update({
+  id: '/api/payment-proof/$key',
+  path: '/api/payment-proof/$key',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiProductImageKeyRoute = ApiProductImageKeyRouteImport.update({
   id: '/api/product-image/$key',
   path: '/api/product-image/$key',
@@ -43,45 +61,72 @@ const ApiProductImageKeyRoute = ApiProductImageKeyRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/order': typeof OrderRoute
   '/track': typeof TrackRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/admin/': typeof AdminIndexRoute
+  '/api/payment-proof/$key': typeof ApiPaymentProofKeyRoute
   '/api/product-image/$key': typeof ApiProductImageKeyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/order': typeof OrderRoute
   '/track': typeof TrackRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/admin': typeof AdminIndexRoute
+  '/api/payment-proof/$key': typeof ApiPaymentProofKeyRoute
   '/api/product-image/$key': typeof ApiProductImageKeyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/order': typeof OrderRoute
   '/track': typeof TrackRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/admin/': typeof AdminIndexRoute
+  '/api/payment-proof/$key': typeof ApiPaymentProofKeyRoute
   '/api/product-image/$key': typeof ApiProductImageKeyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/order' | '/track' | '/api/product-image/$key'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/order'
+    | '/track'
+    | '/admin/orders'
+    | '/admin/'
+    | '/api/payment-proof/$key'
+    | '/api/product-image/$key'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/order' | '/track' | '/api/product-image/$key'
+  to:
+    | '/'
+    | '/order'
+    | '/track'
+    | '/admin/orders'
+    | '/admin'
+    | '/api/payment-proof/$key'
+    | '/api/product-image/$key'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/order'
     | '/track'
+    | '/admin/orders'
+    | '/admin/'
+    | '/api/payment-proof/$key'
     | '/api/product-image/$key'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   OrderRoute: typeof OrderRoute
   TrackRoute: typeof TrackRoute
+  ApiPaymentProofKeyRoute: typeof ApiPaymentProofKeyRoute
   ApiProductImageKeyRoute: typeof ApiProductImageKeyRoute
 }
 
@@ -115,6 +160,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/orders': {
+      id: '/admin/orders'
+      path: '/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/api/payment-proof/$key': {
+      id: '/api/payment-proof/$key'
+      path: '/api/payment-proof/$key'
+      fullPath: '/api/payment-proof/$key'
+      preLoaderRoute: typeof ApiPaymentProofKeyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/product-image/$key': {
       id: '/api/product-image/$key'
       path: '/api/product-image/$key'
@@ -125,11 +191,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminOrdersRoute: typeof AdminOrdersRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminOrdersRoute: AdminOrdersRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   OrderRoute: OrderRoute,
   TrackRoute: TrackRoute,
+  ApiPaymentProofKeyRoute: ApiPaymentProofKeyRoute,
   ApiProductImageKeyRoute: ApiProductImageKeyRoute,
 }
 export const routeTree = rootRouteImport

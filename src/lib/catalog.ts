@@ -4,16 +4,18 @@
 export type Category = 'on-hand' | 'group-buy'
 export type Region = 'Luzon' | 'Visayas' | 'Mindanao'
 export type ShippingMethod = 'JNT' | 'Lalamove'
-export type OrderStatus =
-  | 'Pending Downpayment'
-  | 'Awaiting Payment'
-  | 'Payment Submitted'
-  | 'Manual Quote'
-  | 'Partially Paid'
-  | 'Paid'
-  | 'Packed'
-  | 'Shipped'
-  | 'Cancelled'
+export const orderStatuses = [
+  'Pending Downpayment',
+  'Awaiting Payment',
+  'Payment Submitted',
+  'Manual Quote',
+  'Partially Paid',
+  'Paid',
+  'Packed',
+  'Shipped',
+  'Cancelled',
+] as const
+export type OrderStatus = (typeof orderStatuses)[number]
 
 export const regions: Region[] = ['Luzon', 'Visayas', 'Mindanao']
 
