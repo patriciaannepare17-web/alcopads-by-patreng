@@ -3,13 +3,20 @@ import { createMiddleware, createServerFn } from "@tanstack/react-start";
 import { admin, getUser, type User } from "@netlify/identity";
 import { z } from "zod";
 
-export const isAdmin = (user: User | null) =>
-  !!user &&
-  ((user.roles ?? []).includes("admin") ||
+const OWNER_EMAIL = "patriciaannepare17@gmail.com";
+
+export const isAdmin = (user: User | null) => {
+  if (!user) return false;
+  if (user.email?.trim().toLowerCase() === OWNER_EMAIL) return true;
+
+  return (
+    (user.roles ?? []).includes("admin") ||
     (
       (user.appMetadata?.authorization as { roles?: string[] } | undefined)
         ?.roles ?? []
-    ).includes("admin"));
+    ).includes("admin")
+  );
+};
 
 export const getServerUser = createServerFn({ method: "GET" }).handler(
   async () => {
